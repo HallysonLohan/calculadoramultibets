@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora BetFive 250</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        .result {
+            margin-top: 10px;
+        }
+        .red {
+            color: red;
+        }
+        .blue {
+            color: blue;
+        }
+        .green {
+            color: green;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<h1>CALCULADORA - BETFIVE 250</h1>
+
+<label for="odd1">ODD1:</label>
+<input type="number" id="odd1" step="0.01">
+
+<label for="odd2">ODD2:</label>
+<input type="number" id="odd2" step="0.01">
+
+<label for="stake">Selecione a stake:</label>
+<select id="stake">
+    <option value="250">250</option>
+    <option value="200">200</option>
+    <option value="150">150</option>
+    <option value="100">100</option>
+    <option value="50">50</option>
+    <option value="0">Outro</option>
+</select>
+
+<label for="customStake">Stake personalizada:</label>
+<input type="number" id="customStake" step="0.01" placeholder="Insira um valor">
+
+<button onclick="calcular()">CALCULAR</button>
+
+<div id="results" class="result"></div>
+
+<script>
+function calcular() {
+    const odd1 = parseFloat(document.getElementById('odd1').value);
+    const odd2 = parseFloat(document.getElementById('odd2').value);
+    const stakeSelect = document.getElementById('stake');
+    let stake = stakeSelect.value === "0" ? parseFloat(document.getElementById('customStake').value) : parseFloat(stakeSelect.value);
+
+    if (isNaN(odd1) || isNaN(odd2) || isNaN(stake) || stake <= 0) {
+        alert("Por favor, insira valores válidos.");
+        return;
+    }
+
+    let stake1, stake2;
+    if (odd1 < odd2) {
+        stake1 = stake;
+        stake2 = Math.round(stake1 * odd1 / odd2 * 100) / 100;
+    } else {
+        stake2 = stake;
+        stake1 = Math.round(stake2 * odd2 / odd1 * 100) / 100;
+    }
+
+    const lucro1 = (odd1 * stake1) - stake1 - stake2;
+    const lucro2 = (odd2 * stake2) - stake1 - stake2;
+    const valor = stake1 + stake2;
+
+    let resultHtml = `
+        <p class="result">STAKE1: <span class="purple">${stake1.toFixed(2)}</span></p>
+        <p class="result">STAKE2: <span class="purple">${stake2.toFixed(2)}</span></p>
+        <p class="result ${lucro1 < 0 ? 'red' : 'blue'}">LUCRO1: R$${lucro1.toFixed(2)}</p>
+        <p class="result ${lucro2 < 0 ? 'red' : 'blue'}">LUCRO2: R$${lucro2.toFixed(2)}</p>
+        <p class="result green">VALOR: R$${valor.toFixed(2)}</p>
+    `;
+
+    const lucroTotal = lucro1 + lucro2;
+    const porcentagemLucroTotal = ((lucroTotal / valor) * 100 / 2).toFixed(2);
+    resultHtml += `
+        <p class="result ${porcentagemLucroTotal < 0 ? 'red' : 'blue'}">PORCENTAGEM DE LUCRO TOTAL: ${porcentagemLucroTotal}%</p>
+    `;
+
+    document.getElementById('results').innerHTML = resultHtml;
+}
+</script>
+
+</body>
+</html>
